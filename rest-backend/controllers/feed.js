@@ -17,13 +17,20 @@ exports.getPosts = (req, res, next) => {
 exports.createPost = (req, res, next) => {
     const title = req.body.title;
     const content = req.body.content;
+
     //create post in databse
     res.status(201).json({
         message: 'Post created successfully!',
         post: {
-            id: 0,
+            _id: new Date().toISOString(),
             title: title,
-            content: content
+            content: content,
+            creator: {
+                name: "Pierre"
+            },
+            createdAt: new Date()
         }
     });
+
+
 };
