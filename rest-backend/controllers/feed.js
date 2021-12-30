@@ -37,9 +37,7 @@ exports.getPost= (req, res, next) => {
             err.statusCode = 500;
         }
         next(err);
-    });
-
-    
+    });    
 }
 
 exports.createPost = (req, res, next) => {
@@ -49,13 +47,20 @@ exports.createPost = (req, res, next) => {
         error.statusCode = 422;
         throw error;
     }
+    //image
+    if(!req.file) {
+        const error = new Error('No image provided');
+        error.statusCode = 422;
+        throw error;
+    }
+    const imageUrl = req.file.path.replace("\\" ,"/");
     //create new post in database
     const title = req.body.title;
     const content = req.body.content;
     const post = new Post({
         title: title,
         content: content,
-        imageUrl: 'images/walle.png',
+        imageUrl: imageUrl,
         creator: {
             name: "Pierre"
         }

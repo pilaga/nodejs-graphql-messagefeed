@@ -2,6 +2,7 @@ const express = require('express');
 const bodyparser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
+const multer = require('multer');
 
 const feedRoutes = require('./routes/feed');
 
@@ -9,7 +10,31 @@ const MONGODB_URI = 'mongodb+srv://admin:password_02@cluster0.lrvxm.mongodb.net/
 
 const app = express();
 
+//configure multer
+const { v4: uuidv4 } = require('uuid');
+const fileStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'images');
+    },
+    filename: (req, file, cb) => {
+        cb(null, uuidv4());
+    }
+});
+const fileFilter = (req, file, cb) => {
+    if( file.mimetype === 'image/png' ||
+        file.mimetype === 'image/jpg' ||
+        file.mimetype === 'image/jpeg')
+    {
+        cb(null, true);
+    }
+    else
+    {
+        cb(null, false);
+    }
+}
+
 app.use(bodyparser.json());
+app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 //add headers on any incoming response to allow cross origin requests
