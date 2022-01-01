@@ -137,7 +137,20 @@ exports.deletePost = (req, res, next) => {
     const postId = req.params.postId;
     Post.findById(postId)
     .then(post => {
-
+        //TODO: check logged in user (need authentication)
+        if(!post) {
+            const error = new Error('Could not find post to update');
+            error.statusCode = 404;
+            throw error;
+        }        
+        clearImage(post.imageUrl);
+        return Post.findByIdAndRemove(postId);
+    })
+    .then(result => {
+        console.log(result);
+        res.status(200).json({
+            message: 'Post successfully deleted'
+        });
     })
     .catch(err => {
         if(!err.statusCode) {
