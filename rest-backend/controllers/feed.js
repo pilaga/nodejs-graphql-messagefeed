@@ -94,7 +94,7 @@ exports.updatePost = (req, res, next) => {
     const content = req.body.content;
     let imageUrl = req.body.image;
     if(req.file) {
-        imageUrl = req.file.path;
+        imageUrl = req.file.path.replace("\\" ,"/");
     }
     if(!imageUrl) {
         const error = new Error('No image file picked');
@@ -132,6 +132,20 @@ exports.updatePost = (req, res, next) => {
         next(err);
     });
 };
+
+exports.deletePost = (req, res, next) => {
+    const postId = req.params.postId;
+    Post.findById(postId)
+    .then(post => {
+
+    })
+    .catch(err => {
+        if(!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    });
+}
 
 //delete image helper function
 const clearImage = filepath => {
