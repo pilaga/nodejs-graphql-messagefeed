@@ -65,7 +65,7 @@ exports.login = (req, res, next) => {
             }, 
             'my-secret-key',
             {
-                expiresIn: '1h'
+                expiresIn: '12h'
             }
         );
         res.status(200).json({
