@@ -5,7 +5,7 @@ const path = require('path');
 const Post = require('../models/post');
 const User = require('../models/user');
 
-exports.getPosts = async(req, res, next) => {
+exports.getPosts = async (req, res, next) => {
     const currentPage = req.query.page || 1;
     const perPage = 2;
     let totalItems;
@@ -19,7 +19,7 @@ exports.getPosts = async(req, res, next) => {
             totalItems: totalItems
         })
     }
-    catch (error) {
+    catch (err) {
         if(!err.statusCode) {
             err.statusCode = 500;
         }
@@ -27,29 +27,29 @@ exports.getPosts = async(req, res, next) => {
     }
 };
 
-exports.getPost= (req, res, next) => {
+exports.getPost= async (req, res, next) => {
     const id = req.params.postId;
-    Post.findById(id)
-    .then(post => {
+    try {
+        const post = await Post.findById(id);
         if(!post) {
             const error = new Error('Could not find post');
-            error.statusCode = 404;
+            error.statusCode = 404
             throw error;
         }
         res.status(200).json({
             message: 'Post fetched',
             post: post
         });
-    })
-    .catch(err => {
+    }
+    catch (err) {
         if(!err.statusCode) {
             err.statusCode = 500;
         }
         next(err);
-    });    
+    } 
 }
 
-exports.createPost = (req, res, next) => {
+exports.createPost = async (req, res, next) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         const error = new Error('Validation failed, entered data is incorrect');
@@ -66,41 +66,35 @@ exports.createPost = (req, res, next) => {
     //create new post in database
     const title = req.body.title;
     const content = req.body.content;
-    let creator;
     const post = new Post({
         title: title,
         content: content,
         imageUrl: imageUrl,
         creator: req.userId
     });
-    post.save()
-    .then(post => {
-        return User.findById(req.userId)
-    })
-    .then(user => {
-        creator = user;
+    try {
+        await post.save();
+        const user = await User.findById(req.userId)
         user.posts.push(post);
-        return user.save();
-    })
-    .then(result => {
+        const result = await user.save();
         res.status(201).json({
             message: 'Post created successfully!',
             post: post,
             creator: {
-                _id: creator._id,
-                name: creator.name
+                _id: user._id,
+                name: user.name
             }
         });
-    })
-    .catch(err => {
+    }
+    catch(err) {
         if(!err.statusCode) {
             err.statusCode = 500;
         }
         next(err);
-    });
+    }
 };
 
-exports.updatePost = (req, res, next) => {
+exports.updatePost = async (req, res, next) => {
     const postId = req.params.postId;
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -120,8 +114,8 @@ exports.updatePost = (req, res, next) => {
         throw error;
     }
     //if we reached here, data is valid - update
-    Post.findById(postId)
-    .then(post => {
+    try {
+        const post = Post.findById(postId);
         if(!post) {
             const error = new Error('Could not find post to update');
             error.statusCode = 404;
@@ -140,20 +134,18 @@ exports.updatePost = (req, res, next) => {
         post.title = title;
         post.imageUrl = imageUrl;
         post.content = content;
-        return post.save();
-    })
-    .then(result => {
+        const result = await post.save();
         res.status(200).json({
             message: 'Post updated successfully',
             post: result
         })
-    })
-    .catch(err => {
+    }
+    catch(err) {
         if(!err.statusCode) {
             err.statusCode = 500;
         }
         next(err);
-    });
+    }
 };
 
 exports.deletePost = (req, res, next) => {
