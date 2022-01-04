@@ -50,6 +50,9 @@ class Feed extends Component {
       if(stream.action === 'update') {
         this.updatePost(stream.post);
       }
+      if(stream.action === 'delete') {
+        this.loadPosts();
+      }
     });
   }
 
@@ -239,10 +242,11 @@ class Feed extends Component {
       })
       .then(resData => {
         console.log(resData);
-        this.setState(prevState => {
+        this.loadPosts();
+        /*this.setState(prevState => {
           const updatedPosts = prevState.posts.filter(p => p._id !== postId);
           return { posts: updatedPosts, postsLoading: false };
-        });
+        });*/
       })
       .catch(err => {
         console.log(err);
