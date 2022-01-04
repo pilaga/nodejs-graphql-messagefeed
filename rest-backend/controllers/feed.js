@@ -81,7 +81,13 @@ exports.createPost = async (req, res, next) => {
         //send update to client
         io.getIo().emit('posts', {
             action: 'create',
-            post: post
+            post: {
+                ...post._doc,
+                creator: {
+                    _id: req.userId,
+                    name: user.name
+                }
+            }
         });
         //send response
         res.status(201).json({
