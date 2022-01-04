@@ -1,13 +1,10 @@
+const MONGODB_URI = 'mongodb+srv://admin:password_02@cluster0.lrvxm.mongodb.net/messages?retryWrites=true&w=majority';
+
 const express = require('express');
 const bodyparser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
 const multer = require('multer');
-
-const feedRoutes = require('./routes/feed');
-const authRoutes = require('./routes/auth');
-
-const MONGODB_URI = 'mongodb+srv://admin:password_02@cluster0.lrvxm.mongodb.net/messages?retryWrites=true&w=majority';
 
 const app = express();
 
@@ -46,9 +43,6 @@ app.use((req, res, next) => {
     next();
 })
 
-app.use('/feed', feedRoutes);
-app.use('/auth', authRoutes);
-
 app.use((error, req, res, next) => {
     console.log(error);
     const status = error.statusCode;
@@ -62,11 +56,6 @@ app.use((error, req, res, next) => {
 
 mongoose.connect(MONGODB_URI)
 .then(result => {
-    const server = app.listen(8080);
-    //set up socket.io
-    const io = require('./socket').init(server);
-    io.on('connection', (stream) => {
-        console.log('Client connected');
-    });
+    app.listen(8080);
 })
 .catch(err => console.log(err));
