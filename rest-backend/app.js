@@ -47,9 +47,11 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/graphql', graphqlHTTP({
+app.use('/graphql', 
+graphqlHTTP({
     schema: graphqlSchema,
-    rootValue: graphqlResolver
+    rootValue: graphqlResolver,
+    graphiql: true 
 }));
 
 app.use((error, req, res, next) => {
