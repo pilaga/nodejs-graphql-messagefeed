@@ -3,6 +3,7 @@ const validator = require('validator');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
+const Post = require('../models/post');
 
 module.exports = {
     createUser: async function({ userInput }, req) {
@@ -15,7 +16,7 @@ module.exports = {
             validationErrors.push({ message: 'Password is not long enough' });
         }
         if(validationErrors.length > 0) {
-            const error = new Error('Invalid input');
+            const error = new Error('Invalid user input');
             error.data = validationErrors;
             error.code = 422;
             throw error;
@@ -58,6 +59,35 @@ module.exports = {
         return { 
             token: token,
             userId: user._id.toString()
+        };
+    },
+    createPost: async function({ postInput }, req) {
+        const validationErrors = [];
+        if(validator.isEmpty(postInput.title) || !validator.isLength(postInput.title, { min: 5 })) {
+            validationErrors.push({ message: "Title is invalid" });
+        }
+        if(validator.isEmpty(postInput.content) || !validator.isLength(postInput.content, { min: 5 })) {
+            validationErrors.push({ message: "Title is invalid" });
+        }
+        if(validationErrors.length > 0) {
+            const error = new Error('Invalid post input');
+            error.data = validationErrors;
+            error.code = 422;
+            throw error;
+        }
+        //input is valid, find user and create new post
+        const post = new Post({
+            title: postInput.title,
+            content: postInput.content,
+            imageUrl: postInput.imageUrl
+        });
+        const createdPost = await post.save();
+        //add post to user's post (later)
+        return {
+            ...createdPost._doc, _id: 
+            createdPost._id.toString(),
+            createdAt: createdPost.createdAt.toISOString(),
+            updatedAt: createdPost.updatedAt.toISOString()
         };
     }
 };
