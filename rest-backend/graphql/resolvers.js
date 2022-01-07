@@ -96,6 +96,7 @@ module.exports = {
         const createdPost = await post.save();
         //add post to user's post
         user.posts.push(createdPost);
+        await user.save();
         //returning result to front end
         return {
             ...createdPost._doc, _id: 
