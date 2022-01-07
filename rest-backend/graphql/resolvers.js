@@ -58,6 +58,6 @@ module.exports = {
         return { 
             token: token,
             userId: user._id.toString()
-        }
+        };
     }
 };
