@@ -4,10 +4,10 @@ const express = require('express');
 const bodyparser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
-const fs = require('fs');
 const multer = require('multer');
 const { graphqlHTTP } = require('express-graphql');
 
+const { clearImage } = require('./utils/file');
 const auth = require('./middleware/auth');
 
 const graphqlSchema = require('./graphql/schema');
@@ -109,11 +109,3 @@ mongoose.connect(MONGODB_URI)
 .catch(err => console.log(err));
 
 
-//delete image helper function
-const clearImage = filepath => {
-    filepath = path.join(__dirname, '..', filepath);
-    fs.unlink(filepath, err => {
-        if(err)
-        console.log(err);
-    })
-}
