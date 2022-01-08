@@ -72,7 +72,7 @@ module.exports = {
             validationErrors.push({ message: "Title is invalid" });
         }
         if(validator.isEmpty(postInput.content) || !validator.isLength(postInput.content, { min: 5 })) {
-            validationErrors.push({ message: "Title is invalid" });
+            validationErrors.push({ message: "Content is invalid" });
         }
         if(validationErrors.length > 0) {
             const error = new Error('Invalid post input');
@@ -99,8 +99,8 @@ module.exports = {
         await user.save();
         //returning result to front end
         return {
-            ...createdPost._doc, _id: 
-            createdPost._id.toString(),
+            ...createdPost._doc,
+            _id: createdPost._id.toString(),
             createdAt: createdPost.createdAt.toISOString(),
             updatedAt: createdPost.updatedAt.toISOString()
         };
