@@ -9,6 +9,7 @@ const User = require('../models/user');
 
 describe('Auth controller - Login', function(done) {
 
+    //runs before we start testing
     before(function(done) {
         mongoose.connect(MONGODB_TEST_URI)
         .then(result => {
@@ -24,7 +25,12 @@ describe('Auth controller - Login', function(done) {
         .then(() => {
             done();
         })
-    })
+    });
+
+    //funs before EACH test
+    beforeEach(function(done) {
+        done();
+    });
 
     it('should throw error if accessing the database fails', function(done){
         //stubbing findOne to fake database access
