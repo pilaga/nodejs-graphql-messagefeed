@@ -33,12 +33,30 @@ describe('Auth controller - Login', function(done) {
                 email: 'test@test.com',
                 password: 'test',
                 name: 'test',
-                posts: []
+                posts: [],
+                _id: '5c0f66b979af55031b34728a' //manually set up so we can find the user, needs to be a valid ID string
             });
             return user.save();
         })
-        .then(user => {
-            
+        .then(() => {
+            const req = { userId: '5c0f66b979af55031b34728a' };
+            const res = {
+                statusCode: 500,
+                userStatus: null,
+                status: function(code){
+                    this.statusCode = code;
+                    return this;
+                },
+                json: function(data){
+                    this.userStatus = data.status;
+                }
+            };
+            authController.getUserStatus(req, res, () => {})
+            .then(() => {
+                expect(res.statusCode).to.be.equal(200);
+                expect(res.userStatus).to.be.equal('I am new!');
+                done();
+            });
         })
         .catch(err => console.log(err));
     };
